@@ -1,0 +1,22 @@
+// VIOLATION no timeout on pipeline
+stage ("Build") {
+    node {
+        timeout(time: 60, unit: 'MINUTES') {
+            checkout scm
+            withMaven() {
+                sh "./mvnw clean verify"
+            }
+        }
+    }
+}
+stage ('QA Tests') {
+    // VIOLATION no timeout on input step
+    input 'Deploy on load test environment?'
+    node () {
+        timeout(time: 60, unit: 'MINUTES') {
+            echo "QA tests..."
+            // ... will take several hours
+            sleep 60
+        }
+    }
+}

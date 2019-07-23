@@ -1,0 +1,9 @@
+// VIOLATION no timeout on the pipeline, no timeout on executor
+node {
+    stage ("Build") {
+        checkout scm
+        withMaven() {
+            sh "./mvnw clean verify"
+        }
+    }
+}

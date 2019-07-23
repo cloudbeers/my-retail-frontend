@@ -1,0 +1,24 @@
+timeout(time: 3, unit: 'DAYS') {
+    stage ("Build") {
+        node {
+            timeout(time: 60, unit: 'MINUTES') {
+                checkout scm
+                withMaven() {
+                    sh "./mvnw clean verify"
+                }
+            }
+        }
+    }
+    stage ('QA Tests') {
+        node () {
+            timeout(time: 60, unit: 'MINUTES') {
+                // VIOLATION input step on executor
+                input 'Deploy on load test environment?'
+
+                echo "QA tests..."
+                // ... will take several hours
+                sleep 60
+            }
+        }
+    }
+}
