@@ -1,0 +1,15 @@
+timeout(time: 3, unit: 'DAYS') {
+    stage ("Build") {
+        node {
+            timeout(time: 60, unit: 'MINUTES') {
+                checkout scm
+                withMaven() {
+                    sh "./mvnw clean verify"
+                }
+            }
+        }
+    }
+    stage ('QA Tests') {
+        build job: "master"
+    }
+}
