@@ -1,0 +1,35 @@
+pipeline {
+  options { //global timeout
+     timeout(time: 2, unit: 'DAYS')
+  }
+  agent none
+  stages {
+    stage('Build') {
+      agent {
+        label 'java'
+      }
+      options { //executor timeout - on stage
+        timeout(time: 60, unit: 'MINUTES')
+      }
+      steps {
+        sh "./mvnw clean verify"
+      }
+    }
+    stage('Load Test') {
+      agent {
+        label 'load-test-agent'
+      }
+      input {
+        message 'Deploy on load test environment?'
+      }
+      steps {
+        // timeout is in steps because a timeout on a "stage" would span across the "input" as well
+        timeout(time: 60, unit: 'MINUTES') { //executor timeout - wraps steps
+          echo "Load test..."
+          // ... will take several hours
+          echo "Load test finished"
+        }
+      }
+    }
+  }
+}
